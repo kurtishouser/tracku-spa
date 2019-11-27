@@ -26,16 +26,22 @@ const initialLocation = {
 }
 
 function App() {
-  const [location, setLocation] = useState(initialLocation);
   const [socketId, setSocketId] = useState('');
+  const [location, setLocation] = useState(initialLocation);
+  const [trip, setTrip] = useState(null);
 
   const center = { lat: location.geometry.coordinates[1], lng: location.geometry.coordinates[0] };
   const zoom = 14;
 
   socket.on('connect', () => {
     setSocketId(socket.id);
+
     socket.on('location-updated', newLocation => {
       setLocation(newLocation);
+    });
+
+    socket.on('trip-active', activeTrip => {
+      setTrip(activeTrip);
     });
   });
 
@@ -95,6 +101,14 @@ function App() {
           </div>
           <div><span className='field-label'>Latitude:</span> {location.geometry.coordinates[1].toFixed(6)}</div>
           <div><span className='field-label'>Longitude:</span> {location.geometry.coordinates[0].toFixed(6)}</div>
+          {trip &&
+          <div>
+            <hr />
+            <div><span className='field-label'>Trip Start Time:</span> {new Date(trip.start_location.properties.timestamp).toLocaleTimeString('en-US')}</div>
+            <div><span className='field-label'>Trip Current Time:</span> {new Date(trip.current_location.properties.timestamp).toLocaleTimeString('en-US')}</div>
+            <div><span className='field-label'>Trip Distance:</span> {`${(trip.distance / 1609.344).toFixed(2)} miles (${(trip.distance / 1000).toFixed(2)} km)`}</div>
+          </div>
+          }
         </div>
       </div>
     </div>
