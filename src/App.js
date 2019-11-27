@@ -61,8 +61,8 @@ function App() {
           />
           <Marker position={center}>
             <Popup>
-              <div>Device: { location.properties.device_id }</div>
-              <div>Time: { location.properties.timestamp }</div>
+              <div><strong>Device:</strong> { location.properties.device_id }</div>
+              <div><strong>Time:</strong> { location.properties.timestamp && new Date(location.properties.timestamp).toLocaleTimeString('en-US')}</div>
             </Popup>
           </Marker>
           <ScaleControl position="bottomleft" />
@@ -70,15 +70,29 @@ function App() {
 
         <div className='device-details'>
           <div><span className='field-label'>Device:</span> {location.properties.device_id}</div>
-          <div><span className='field-label'>Battery (%):</span> {location.properties.battery_level && (location.properties.battery_level * 100).toFixed(2)}</div>
+          <div><span className='field-label'>Battery:</span> {location.properties.battery_level &&
+            `${(location.properties.battery_level * 100).toFixed(1)} %`}
+          </div>
           <div><span className='field-label'>Battery State:</span> {location.properties.battery_state}</div>
           <div><span className='field-label'>WiFi:</span> {location.properties.wifi}</div>
-          <div><span className='field-label'>Time:</span> {location.properties.timestamp}</div>
-          <div><span className='field-label'>Speed (m/s):</span> {location.properties.speed}</div>
-          <div><span className='field-label'>Motion:</span> {location.properties.motion && location.properties.motion.join(', ')}</div>
-          <div><span className='field-label'>Altitude (m):</span> {location.properties.altitude}</div>
-          <div><span className='field-label'>Vertical Accuracy (m):</span> {location.properties.vertical_accuracy}</div>
-          <div><span className='field-label'>Horizontal Accuracy (m):</span> {location.properties.horizontal_accuracy}</div>
+          <div><span className='field-label'>Time:</span> {location.properties.timestamp &&
+            new Date(location.properties.timestamp).toLocaleTimeString('en-US')}
+          </div>
+          <div><span className='field-label'>Speed:</span> {location.properties.speed &&
+            `${(location.properties.speed * 2.23694).toFixed(1)} mph (${location.properties.speed} m/s)`}
+          </div>
+          <div><span className='field-label'>Motion:</span> {location.properties.motion &&
+            location.properties.motion.join(', ')}
+          </div>
+          <div><span className='field-label'>Altitude:</span> {location.properties.altitude &&
+            `${(location.properties.altitude * 3.28084).toFixed(1)} ft (${location.properties.altitude} m)`}
+          </div>
+          <div><span className='field-label'>Vertical Accuracy:</span> {location.properties.vertical_accuracy &&
+          `${(location.properties.vertical_accuracy * 3.28084).toFixed(1)} ft (${location.properties.vertical_accuracy} m)`}
+          </div>
+          <div><span className='field-label'>Horizontal Accuracy:</span> {location.properties.horizontal_accuracy &&
+            `${(location.properties.horizontal_accuracy * 3.28084).toFixed(1)} ft (${location.properties.horizontal_accuracy} m)`}
+          </div>
           <div><span className='field-label'>Latitude:</span> {location.geometry.coordinates[1].toFixed(6)}</div>
           <div><span className='field-label'>Longitude:</span> {location.geometry.coordinates[0].toFixed(6)}</div>
         </div>
