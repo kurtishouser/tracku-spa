@@ -9,23 +9,28 @@
 }
 .header h1 {
   margin: 20px 0 10px;
-  font-size: 30px;
 }
 .content {
   margin: 20px;
 }
-.map {
-  height: 400px;
-  width: 100%;
-  border: 1px solid #000000;
-}
-.device-details {
-  margin-top: 20px;
+.content-section {
+  margin: 20px 0;
   padding: 10px;
   border: 1px solid #000000;
 }
-.text-red {
-  color: red;
+.content-section h2 {
+  font-size: 1.25em;
+  font-weight: 600;
+  margin: 0 0 10px 0;
+}
+.map {
+  height: 400px;
+}
+.text-success {
+  color: #00e500;
+}
+.text-error {
+  color: #e50000;
 }
 .field-label {
   font-weight: 600;
