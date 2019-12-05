@@ -38,33 +38,27 @@ function App() {
   const zoom = 14;
 
   useEffect(() => {
-    socket.on('connect', () => setSocketId(socket.id));
+    socket.once('connect', () => setSocketId(socket.id));
   }, [socketId]);
 
   useEffect(() => {
-    socket.on('location-updated', newLocation => {
-      setLocation(newLocation);
-    });
+    socket.once('disconnect', () => setSocketId(null));
+  }, [socketId]);
+
+  useEffect(() => {
+    socket.once('location-updated', newLocation => setLocation(newLocation));
   }, [location]);
 
   useEffect(() => {
-    socket.on('trip-active', activeTrip => {
-      setActiveTrip(activeTrip);
-    });
+    socket.once('trip-active', activeTrip => setActiveTrip(activeTrip));
   }, [activeTrip]);
 
   useEffect(() => {
-    socket.on('trip-complete', newTrips => {
+    socket.once('trip-complete', newTrips => {
       setActiveTrip(null);
       setCompletedTrips(completedTrips.concat(newTrips));
     });
   }, [completedTrips]);
-
-  useEffect(() => {
-    socket.on('disconnect', () => {
-      setSocketId(null);
-    });
-  }, [socketId]);
 
   return (
     <div>
