@@ -35,3 +35,26 @@
 .field-label {
   font-weight: 600;
 }
+@media only screen and (max-width: 600px) {
+  header {
+    padding: 0 10px 10px !important;
+    align-items: center;
+  }
+  header h1 {
+    margin: 10px 0 0 !important;
+    font-size: 1.5em;
+  }
+  .content {
+    margin: 10px;
+    font-size: 0.8em;
+  }
+  .content-section {
+    margin: 10px 0;
+  }
+  .content-section h2 {
+    margin: 0 0 5px 0;
+  }
+  .map {
+    height: 200px;
+  }
+}
