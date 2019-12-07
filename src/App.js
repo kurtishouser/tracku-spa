@@ -43,6 +43,8 @@ function App() {
 
   useEffect(() => {
     socket.once('device-update', payload => {
+      console.log(payload);
+      
       setDeviceDetails({
         currentLocation: payload.currentLocation,
         currentTrip: payload.currentTrip,
@@ -59,7 +61,7 @@ function App() {
     lat: currentLocation.geometry.coordinates[1],
     lng: currentLocation.geometry.coordinates[0]
   };
-  const zoom = 14;
+  const zoom = 16;
 
   return (
     <div>
@@ -78,20 +80,19 @@ function App() {
             url='https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
             attribution='Map data © <a href="http://openstreetmap.org">OpenStreetMap</a> contributors'
           />
-          <Marker position={center}>
-            <Popup>
-              <div>
-                <strong>Device:</strong> {currentLocation.properties.device_id}
-              </div>
-              <div>
-                <strong>Time:</strong>{' '}
-                {currentLocation.properties.timestamp &&
-                  new Date(currentLocation.properties.timestamp).toLocaleTimeString(
-                    'en-US'
-                  )}
-              </div>
-            </Popup>
-          </Marker>
+          {currentLocation.properties.timestamp && (
+            <Marker position={center}>
+              <Popup>
+                <div>
+                  <strong>Device:</strong>{' '}
+                  {currentLocation.properties.device_id}
+                </div>
+                <div>
+                  <strong>Time:</strong> {currentLocation.properties.local_time}
+                </div>
+              </Popup>
+            </Marker>
+          )}
           <ScaleControl position='bottomleft' />
         </Map>
 
@@ -106,7 +107,9 @@ function App() {
               <div>
                 <span className='field-label'>Battery:</span>{' '}
                 {currentLocation.properties.battery_level &&
-                  `${(currentLocation.properties.battery_level * 100).toFixed(1)} %`}
+                  `${(currentLocation.properties.battery_level * 100).toFixed(
+                    0
+                  )}%`}
               </div>
               <div>
                 <span className='field-label'>Battery State:</span>{' '}
@@ -117,18 +120,23 @@ function App() {
                 {currentLocation.properties.wifi}
               </div>
               <div>
+                <span className='field-label'>Date:</span>{' '}
+                {currentLocation.properties.local_date}
+              </div>
+              <div>
                 <span className='field-label'>Time:</span>{' '}
-                {currentLocation.properties.timestamp &&
-                  new Date(currentLocation.properties.timestamp).toLocaleTimeString(
-                    'en-US'
-                  )}
+                {currentLocation.properties.local_time}
+              </div>
+              <div>
+                <span className='field-label'>Time Zone:</span>{' '}
+                {currentLocation.properties.local_time_zone}
               </div>
               <div>
                 <span className='field-label'>Speed:</span>{' '}
                 {currentLocation.properties.speed &&
-                  `${(currentLocation.properties.speed * 2.23694).toFixed(1)} mph (${
-                    currentLocation.properties.speed
-                  } m/s)`}
+                  `${(currentLocation.properties.speed * 2.23694).toFixed(
+                    1
+                  )} mph (${currentLocation.properties.speed} m/s)`}
               </div>
               <div>
                 <span className='field-label'>Motion:</span>{' '}
@@ -138,16 +146,18 @@ function App() {
               <div>
                 <span className='field-label'>Altitude:</span>{' '}
                 {currentLocation.properties.altitude &&
-                  `${(currentLocation.properties.altitude * 3.28084).toFixed(1)} ft (${
-                    currentLocation.properties.altitude
-                  } m)`}
+                  `${(currentLocation.properties.altitude * 3.28084).toFixed(
+                    1
+                  )} ft (${currentLocation.properties.altitude} m)`}
               </div>
               <div>
                 <span className='field-label'>Vertical Accuracy:</span>{' '}
                 {currentLocation.properties.vertical_accuracy &&
-                  `${(currentLocation.properties.vertical_accuracy * 3.28084).toFixed(
-                    1
-                  )} ft (${currentLocation.properties.vertical_accuracy} m)`}
+                  `${(
+                    currentLocation.properties.vertical_accuracy * 3.28084
+                  ).toFixed(1)} ft (${
+                    currentLocation.properties.vertical_accuracy
+                  } m)`}
               </div>
               <div>
                 <span className='field-label'>Horizontal Accuracy:</span>{' '}
@@ -175,19 +185,30 @@ function App() {
           {currentTrip && (
             <div>
               <div>
-                <span className='field-label'>Trip Start Time:</span>{' '}
-                {new Date(
-                  currentTrip.start_location.properties.timestamp
-                ).toLocaleTimeString('en-US')}
+                <span className='field-label'>Date:</span>{' '}
+                {currentTrip.start_location.properties.local_date}
               </div>
               <div>
-                <span className='field-label'>Trip Current Time:</span>{' '}
-                {new Date(
-                  currentTrip.current_location.properties.timestamp
-                ).toLocaleTimeString('en-US')}
+                <span className='field-label'>Start Time:</span>{' '}
+                {currentTrip.start_location.properties.local_time}
               </div>
               <div>
-                <span className='field-label'>Trip Distance:</span>{' '}
+                <span className='field-label'>Current Time:</span>{' '}
+                {currentTrip.current_location.properties.local_time}
+              </div>
+              <div>
+                <span className='field-label'>Duration:</span>{' '}
+                {new Date(
+                  Date.parse(
+                    currentTrip.current_location.properties.timestamp
+                  ) -
+                    Date.parse(currentTrip.start_location.properties.timestamp)
+                )
+                  .toISOString()
+                  .substr(11, 10)}
+              </div>
+              <div>
+                <span className='field-label'>Distance:</span>{' '}
                 {`${(currentTrip.distance / 1609.344).toFixed(2)} miles (${(
                   currentTrip.distance / 1000
                 ).toFixed(2)} km)`}
@@ -202,12 +223,16 @@ function App() {
             return (
               <div key={trip.properties.timestamp}>
                 <div>
+                  <span className='field-label'>Date:</span>{' '}
+                  {trip.properties.start_location.properties.local_date}
+                </div>
+                <div>
                   <span className='field-label'>Start Time:</span>{' '}
-                  {new Date(trip.properties.start).toLocaleTimeString('en-US')}
+                  {trip.properties.start_location.properties.local_time}
                 </div>
                 <div>
                   <span className='field-label'>End Time:</span>{' '}
-                  {new Date(trip.properties.end).toLocaleTimeString('en-US')}
+                  {trip.properties.end_location.properties.local_time}
                 </div>
                 <div>
                   <span className='field-label'>Duration:</span>{' '}
