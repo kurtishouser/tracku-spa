@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Map, TileLayer, ScaleControl, Marker, Popup } from 'react-leaflet';
 import io from 'socket.io-client';
 
+import { mpsToMph, metersToFeet, metersToMiles } from './utils/unitConversion';
+
 // CSS
 import 'leaflet/dist/leaflet.css';
 import './App.css';
@@ -43,8 +45,6 @@ function App() {
 
   useEffect(() => {
     socket.once('device-update', payload => {
-      console.log(payload);
-      
       setDeviceDetails({
         currentLocation: payload.currentLocation,
         currentTrip: payload.currentTrip,
@@ -134,9 +134,9 @@ function App() {
               <div>
                 <span className='field-label'>Speed:</span>{' '}
                 {currentLocation.properties.speed &&
-                  `${(currentLocation.properties.speed * 2.23694).toFixed(
-                    1
-                  )} mph (${currentLocation.properties.speed} m/s)`}
+                  `${mpsToMph(currentLocation.properties.speed, 1)} mph (${
+                    currentLocation.properties.speed
+                  } m/s)`}
               </div>
               <div>
                 <span className='field-label'>Motion:</span>{' '}
@@ -146,27 +146,23 @@ function App() {
               <div>
                 <span className='field-label'>Altitude:</span>{' '}
                 {currentLocation.properties.altitude &&
-                  `${(currentLocation.properties.altitude * 3.28084).toFixed(
+                  `${metersToFeet(
+                    currentLocation.properties.altitude,
                     1
                   )} ft (${currentLocation.properties.altitude} m)`}
               </div>
               <div>
                 <span className='field-label'>Vertical Accuracy:</span>{' '}
                 {currentLocation.properties.vertical_accuracy &&
-                  `${(
-                    currentLocation.properties.vertical_accuracy * 3.28084
-                  ).toFixed(1)} ft (${
-                    currentLocation.properties.vertical_accuracy
-                  } m)`}
+                  `${metersToFeet(currentLocation.properties.vertical_accuracy, 1)} ft (${currentLocation.properties.vertical_accuracy} m)`}
               </div>
               <div>
                 <span className='field-label'>Horizontal Accuracy:</span>{' '}
                 {currentLocation.properties.horizontal_accuracy &&
-                  `${(
-                    currentLocation.properties.horizontal_accuracy * 3.28084
-                  ).toFixed(1)} ft (${
-                    currentLocation.properties.horizontal_accuracy
-                  } m)`}
+                  `${metersToFeet(
+                    currentLocation.properties.horizontal_accuracy,
+                    1
+                  )} ft (${currentLocation.properties.horizontal_accuracy} m)`}
               </div>
               <div>
                 <span className='field-label'>Latitude:</span>{' '}
@@ -209,7 +205,7 @@ function App() {
               </div>
               <div>
                 <span className='field-label'>Distance:</span>{' '}
-                {`${(currentTrip.distance / 1609.344).toFixed(2)} miles (${(
+                {`${metersToMiles(currentTrip.distance, 2)} miles (${(
                   currentTrip.distance / 1000
                 ).toFixed(2)} km)`}
               </div>
@@ -242,11 +238,9 @@ function App() {
                 </div>
                 <div>
                   <span className='field-label'>Distance:</span>{' '}
-                  {`${(trip.properties.distance / 1609.344).toFixed(
-                    2
-                  )} miles (${(trip.properties.distance / 1000).toFixed(
-                    2
-                  )} km)`}
+                  {`${metersToMiles(trip.properties.distance, 2)} miles (${(
+                    trip.properties.distance / 1000
+                  ).toFixed(2)} km)`}
                 </div>
                 <div>
                   <span className='field-label'>Mode:</span>{' '}
